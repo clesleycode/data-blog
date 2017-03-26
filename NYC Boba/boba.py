@@ -8,37 +8,39 @@ from geopandas import GeoDataFrame
 from geojson import Feature, FeatureCollection
 from geojsonio import display
 
-# authentication initialized
-gmaps = googlemaps.Client(key='my_key')
 
-# open csv with list of bubble tea places in new york city
-boba = pd.read_csv('./boba.csv')
+class BubbleTea(object):
 
-# gets latitutde and longitudes of each place
-boba['Lat'] = boba['Address'].apply(geocoder.google).apply(lambda x: x.lat)
-boba['Longitude'] = boba['Address'].apply(geocoder.google).apply(lambda x: x.lng)
+	# authentication initialized
+	gmaps = googlemaps.Client(key='my_key')
 
-# converts lat and long points to coordinate point data type
-boba['Coordinates'] = [Point(xy) for xy in zip(boba.Longitude, boba.Lat)]
+	def _init__(self, filename):
+		# initalizes csv with list of bubble tea places to dataframe
+		boba = pd.read_csv(filename)
 
-# writes to a csv and opens
-boba.to_csv('boba_final.csv')
-boba = pd.read_csv('./boba_final.csv')
+	def get_coords(self): 
+		# gets latitude and longitudes of each place
+		boba['Lat'] = boba['Address'].apply(geocoder.google).apply(lambda x: x.lat)
+		boba['Longitude'] = boba['Address'].apply(geocoder.google).apply(lambda x: x.lng)
+		# converts lat and long points to coordinate point data type
+		boba['Coordinates'] = [Point(xy) for xy in zip(boba.Longitude, boba.Lat)]
 
-# list of coordinates
-geo = [Point(xy) for xy in zip(boba.Longitude, boba.Lat)]
+	def get_geo(self):
+		return(list(boba['Coordinates']))
 
-# series for boba names
-bname = boba['Name']
+	def get_names(self):
+		return(boba['Name'])
 
-# coordinate system parameter
-crs = {'init': 'epsg:4326'}
+	def get_gdf(self):
+		# coordinate system parameters
+		crs = {'init': 'epsg:4326'}
+		return(GeoDataFrame(get_names(), crs=crs, geometry=get_geo()))
 
-# converts to geodataframe
-geo_df = GeoDataFrame(bname, crs=crs, geometry=geo) 
+	#def update(self):
 
-# displays to geojsonio
-display(geo_df.to_json())
+
+if __name__ == "__main__":
+	display(geo_df.to_json())
 
 
 
