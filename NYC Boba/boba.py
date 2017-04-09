@@ -14,7 +14,7 @@ class BubbleTea(object):
 	# authentication initialized
 	gmaps = googlemaps.Client(key='my_key')
 
-	def _init__(self, filename):
+	def __init__(self, filename):
 		# initalizes csv with list of bubble tea places to dataframe
 		boba = pd.read_csv(filename)
 
