@@ -12,36 +12,36 @@ from geojsonio import display
 class BubbleTea(object):
 
 	# authentication initialized
-	gmaps = googlemaps.Client(key='my_key')
+	gmaps = googlemaps.Client(key='your_key')
 
 	def __init__(self, filename):
 		# initalizes csv with list of bubble tea places to dataframe
-		boba = pd.read_csv(filename)
+		self.boba = pd.read_csv(filename)
 
-	def get_coords(self): 
+	def calc_coords(self): 
 		# gets latitude and longitudes of each place
-		boba['Lat'] = boba['Address'].apply(geocoder.google).apply(lambda x: x.lat)
-		boba['Longitude'] = boba['Address'].apply(geocoder.google).apply(lambda x: x.lng)
+		self.boba['Lat'] = self.boba['Address'].apply(geocoder.google).apply(lambda x: x.lat)
+		self.boba['Longitude'] = self.boba['Address'].apply(geocoder.google).apply(lambda x: x.lng)
 		# converts lat and long points to coordinate point data type
-		boba['Coordinates'] = [Point(xy) for xy in zip(boba.Longitude, boba.Lat)]
+		self.boba['Coordinates'] = [Point(xy) for xy in zip(self.boba.Longitude, self.boba.Lat)]
 
 	def get_geo(self):
-		return(list(boba['Coordinates']))
+		return(list(self.boba['Coordinates']))
 
 	def get_names(self):
-		return(boba['Name'])
+		return(self.boba['Name'])
 
 	def get_gdf(self):
 		# coordinate system parameters
 		crs = {'init': 'epsg:4326'}
-		return(GeoDataFrame(get_names(), crs=crs, geometry=get_geo()))
+		return(GeoDataFrame(self.get_names(), crs=crs, geometry=self.get_geo()))
 
-	#def update(self):
-
+	def get_boba(self):
+		return(self.boba)
+	
+	# still not written
+	def update(self):
+		self.boba = self.boba['Name'].where(self.boba['Lat'] == float('nan'))
 
 if __name__ == "__main__":
-	display(geo_df.to_json())
-
-
-
-
+	boba1 = BubbleTea("./sample.csv")
