@@ -88,9 +88,3 @@ if __name__ == "__main__":
 		if ask == "N":
 			buff = False
 			b1.visualize()
-
-
-
-
-
-	
